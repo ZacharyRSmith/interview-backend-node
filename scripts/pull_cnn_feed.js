@@ -8,24 +8,44 @@
 */
 
 let http = require('http'),
+    Promise = require('bluebird'),
 
     // defines URL of CNN feed:
     SOURCE_FEED_URL = 'http://www.cnn.com/data/ocs/section/index.html:homepage1-zone-1.json';
 
 
-module.exports = (next) => {
-    http.get(SOURCE_FEED_URL, (res) => {
-        let body = '';
+module.exports = Promise.method(() => {
+    return new Promise((next) => {
+        http.get(SOURCE_FEED_URL, (res) => {
+            let body = '';
 
-        res.on('data', (chunk) => {
-            body += chunk;
-        });
+            res.on('data', (chunk) => {
+                body += chunk;
+            });
 
-        res.on('end', () => {
-            let cnnFeed = JSON.parse(body);
-            next(cnnFeed);
+            res.on('end', () => {
+                let cnnFeed = JSON.parse(body);
+                next(cnnFeed);
+            });
+        }).on('error', (e) => {
+            throw new Error(e);
         });
-    }).on('error', (e) => {
-        throw new Error(e);
     });
-};
+});
+
+// module.exports = (next) => {
+//     http.get(SOURCE_FEED_URL, (res) => {
+//         let body = '';
+
+//         res.on('data', (chunk) => {
+//             body += chunk;
+//         });
+
+//         res.on('end', () => {
+//             let cnnFeed = JSON.parse(body);
+//             next(cnnFeed);
+//         });
+//     }).on('error', (e) => {
+//         throw new Error(e);
+//     });
+// };

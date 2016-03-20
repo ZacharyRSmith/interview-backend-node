@@ -16,10 +16,11 @@ describe('main.js\'s JSON output', () => {
         outCache;
 
     before((done) => {
-        main((newFeed) => {
-            outCache = newFeed;
-            done();
-        });
+        main()
+            .then((newFeed) => {
+                outCache = newFeed;
+                done();
+            });
     });
 
     beforeEach(() => {

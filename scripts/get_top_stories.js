@@ -7,8 +7,10 @@
 * Output: Exports a function that provides JSON object of the top stories.
 */
 
+let Promise = require('bluebird'),
+
     // points to CNN feed property that is an array containing the top stories container:
-let CONTAINERS_LOCATION = 'zoneContents',
+    CONTAINERS_LOCATION = 'zoneContents',
     // property of top stories container that is an array of the actual top stories:
     TOP_STORIES_KEY = 'containerContents',
     // defines the .title value of the object containing the top stories:
@@ -23,9 +25,6 @@ function findTopStoriesContainer(cnnFeed) {
     });
 }
 
-
-module.exports = (cnnFeed,  next) => {
-    let topStoriesContainer = findTopStoriesContainer(cnnFeed);
-
-    next(topStoriesContainer[TOP_STORIES_KEY]);
-};
+module.exports = Promise.method((cnnFeed) => {
+    return findTopStoriesContainer(cnnFeed)[TOP_STORIES_KEY];
+});

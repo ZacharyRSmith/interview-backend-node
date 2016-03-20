@@ -16,8 +16,10 @@
 *   then set imageUrl to an empty string.
 */
 
+let Promise = require('bluebird'),
+
     // the default URL domain for the new imageUrl property:
-let IMG_DOMAIN = 'www.cnn.com',
+    IMG_DOMAIN = 'www.cnn.com',
     // An array of known possible image sizes from highest to lowest quality:
     // NOTE: mini1x1 is a special cut that is not always in the same aspect ratio
     IMG_SIZES = ['full16x9', 'large', 'medium', 'small', 'xsmall', 'mini', 'mini1x1'],
@@ -73,10 +75,8 @@ function transformArticle(article) {
 }
 
 
-module.exports = (topStories, next) => {
-    let newFeed = topStories.reduce((newFeed, story) => {
+module.exports = Promise.method((topStories) => {
+    return topStories.reduce((newFeed, story) => {
         return newFeed.concat(transformArticle(story));
     }, []);
-
-    next(newFeed);
-};
+});

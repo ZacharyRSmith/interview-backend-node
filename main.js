@@ -76,24 +76,28 @@
 * expected schema.
 */
 
-// Extracts the top stories from the CNN feed:
-let getTopStories = require('./scripts/get_top_stories'),
+let Promise = require('bluebird'),
+
+    // Extracts the top stories from the CNN feed:
+    getTopStories = require('./scripts/get_top_stories'),
     // Uses the http module to pull CNN feed:
     pullCnnFeed = require('./scripts/pull_cnn_feed'),
     // Transforms the top stories to the desired new feed's schema:
-    transformTopStories = require('./scripts/transform_top_stories');
+    transformTopStories = require('./scripts/transform_top_stories'),
 
-function genNewFeed(next) {
-    pullCnnFeed((cnnFeed) => {
-        getTopStories(cnnFeed, (topStories) => {
-            transformTopStories(topStories, (newFeed) => {
-                next(JSON.stringify(newFeed));
+    genNewFeed = Promise.method(() => {
+        return pullCnnFeed()
+            .then(getTopStories)
+            .then(transformTopStories)
+            .then((newFeedObj) => {
+                return JSON.stringify(newFeedObj);
             });
-        });
     });
-}
 
 
-genNewFeed(console.log);
+genNewFeed()
+    .then((newFeed) => {
+        console.log(newFeed);
+    });
 
 module.exports = genNewFeed;
